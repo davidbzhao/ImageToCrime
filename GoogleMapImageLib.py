@@ -1,20 +1,14 @@
-
-# coding: utf-8
-
-# In[ ]:
-
 #download the google map image from url
 import urllib.request
 import math
 
-def downloadMapImage(latitude, longitude, key, fileName, width=640, height=640, zoom=17)
+def downloadMapImage(latitude, longitude, key, fileName, width=640, height=640, zoom=17):
     f = open(fileName, "wb")
     f.write(urllib.request.urlopen('https://maps.googleapis.com/maps/api/staticmap?center='                                    + str(latitude) +','+ str(longitude) + '&zoom=17&size=' +                                    str(width) + 'x' + str(height) + '&maptype=satellite&key=' + key)                                    .read())
     f.close()
     
 
 
-# In[ ]:
 
 def getPicWidthMeters(latitude, pic_width_pixels, zoom): 
     meters_per_pixel = 156543.03392 * math.cos(latitude * math.pi / 180) / math.pow(2, zoom) 
@@ -22,7 +16,6 @@ def getPicWidthMeters(latitude, pic_width_pixels, zoom):
     return pic_width_meters
 
 
-# In[ ]:
 
 # get coordinates of 2nd point, given a starting point, distance moved, and either moving east/west
 # latitude and longitude must be given in DEGREES
@@ -43,7 +36,6 @@ def getSecondPointMovingEW(lat1, long1, distance, west= True):
     return math.degrees(long2)
 
 
-# In[ ]:
 
 # Inaccurate 2nd Coordinate Calculation 
 #theta measured counterclockwise from due east
@@ -59,19 +51,20 @@ def getSecondPointMovingEW(lat1, long1, distance, west= True):
 # latitude  += delta_latitude
 
 
-# In[ ]:
 
-key = ""
+# Testing 
+key = "" 
 latitude = 41.878114
 longitude = -87.6298
 zoom = 17
 width = 640
 height = 640
-downloadMapImage(latitude, longitude, key, "testimg1.png")
+# downloadMapImage(latitude, longitude, key, "testimg1.png")
+
 
 distanceFromCenter = getPicWidthMeters(latitude, width, zoom)
 longitude = getSecondPointMovingEW(latitude, longitude, distanceFromCenter, west=False)
-print(longitude)
+print(distanceFromCenter)
 downloadMapImage(latitude, longitude, key, "testimg1.png")
 f = open("testimg2.png", "wb")
 f.write(urllib.request.urlopen('https://maps.googleapis.com/maps/api/staticmap?center='                                + str(latitude) +','+ str(longitude) + '&zoom=17&&size=640x640&maptype=satellite&key=' + key)                                .read())
