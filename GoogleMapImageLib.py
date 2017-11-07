@@ -13,8 +13,7 @@ def is_within_city(latitude, longitude, city_name, key):
         raise BaseException("Something wrong happened when reverse-geocoding this location:", latitude , longitude, "This is the error received", response.json()['status'])
 
     address = response.json()["results"][0]["formatted_address"]
-    city = address.split(",")[1]
-
+    city = address.split(",")[1].strip()
     return city == city_name
 
 def download_satelite_image(latitude, longitude, key, fileName, width=640, height=640, zoom=17):
