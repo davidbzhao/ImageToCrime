@@ -79,7 +79,6 @@ while(starting_point[0] >= lower_right_boundary_lat):
     # width changes everytime the latitude changes
     pic_width = get_pic_width_meters(starting_point[0], 640, 17)
     # download images for the current row
-
     download_entire_lat(starting_point[0], starting_point[1], lower_right_boundary_long, pic_width, key)
 
     # move down ; starting point will be the center of the leftmost square in the row below the current row
