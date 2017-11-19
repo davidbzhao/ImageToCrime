@@ -1,7 +1,14 @@
 from GoogleMapImageLib import download_map_image, get_second_point, get_pic_width_meters, is_within_city
 row_counter = 0
+upper_left_boundary_lat, upper_left_boundary_long = 42.023827, -87.932487 # 42.017191, -87.819896 = dont include airport
+intmd_left_bound = 41.946839, -87.867751
+lower_right_boundary_lat = 41.643764
+lower_right_boundary_long = -87.522456
+
 key = ""
-image_coord_file = open("image_coords.txt", "w")
+key = input("API Key: ")
+starting_row = int(input("row to start from? "))
+image_coord_file = open("image_coords.txt", "a")
 image_coord_file.close()
 
 
@@ -24,8 +31,8 @@ def download_right(lat, long, bound, width_pic, key):
     while long < bound:
         if is_within_city(lat, long, "Chicago", key): # within the city ranges
 
-            filename = str(row_counter) + "_" + str(col_counter)
-            download_map_image(lat, long, key, filename+".png")
+            filename = str(row_counter) + "_" + str(col_counter) + ".png"
+            download_map_image(lat, long, key, filename)
 
             TL_corner = get_top_left_corner(lat, long, half_pic_width)
             BR_corner = get_bot_right_corner(lat, long, half_pic_width)
@@ -43,31 +50,36 @@ def download_entire_lat(lat, long, right_bound, pic_width, key):
     return
 
 
-# general setup
-upper_left_boundary_lat, upper_left_boundary_long = 42.023827, -87.932487 # 42.017191, -87.819896 = dont include airport
-intmd_left_bound = 41.946839, -87.867751
-lower_right_boundary_lat = 41.643764
-lower_right_boundary_long = -87.522456
+def get_starting_point(row_num):
+    global row_counter
+    pic_width = get_pic_width_meters(upper_left_boundary_lat, 640, 17)
+    starting_point = get_second_point(upper_left_boundary_lat, upper_left_boundary_long, pic_width / 2, 2)
+    starting_point = get_second_point(starting_point[0], starting_point[1], pic_width / 2, 3)
+    for i in range(row_num):
+        pic_width = get_pic_width_meters(starting_point[0], 640, 17)
+        starting_point = get_second_point(starting_point[0], starting_point[1], pic_width / 2, 3)
+        row_counter += 1
+    return starting_point
+
 
 # picture width in meters changes everytime the latitude changes
-pic_width = get_pic_width_meters(upper_left_boundary_lat, 640, 17)
-starting_point = get_second_point(upper_left_boundary_lat, upper_left_boundary_long, pic_width / 2, 2)
-starting_point = get_second_point(starting_point[0], starting_point[1], pic_width/2, 3)
+starting_point = get_starting_point(starting_row)
 print(starting_point)
 
-print(get_top_left_corner(starting_point[0], starting_point[1], get_pic_width_meters(starting_point[0], 640, 17)/2))
-
-test_point = (upper_left_boundary_lat, upper_left_boundary_long)
-pic_width = get_pic_width_meters(starting_point[0], 640, 17)
-while(test_point[1] < intmd_left_bound[1]):
-    test_point = get_second_point(test_point[0], test_point[1], pic_width/2, 2)
-# print(test_point)
-intmd_starting_long = test_point[1]
+# test_point = (upper_left_boundary_lat, upper_left_boundary_long)
+# pic_width = get_pic_width_meters(starting_point[0], 640, 17)
+#
+#
+# while(test_point[1] < intmd_left_bound[1]):
+#     test_point = get_second_point(test_point[0], test_point[1], pic_width/2, 2)
+# # print(test_point)
+# intmd_starting_long = test_point[1]
 
 while(starting_point[0] >= lower_right_boundary_lat):
     # width changes everytime the latitude changes
     pic_width = get_pic_width_meters(starting_point[0], 640, 17)
     # download images for the current row
+
     download_entire_lat(starting_point[0], starting_point[1], lower_right_boundary_long, pic_width, key)
 
     # move down ; starting point will be the center of the leftmost square in the row below the current row
@@ -75,6 +87,6 @@ while(starting_point[0] >= lower_right_boundary_lat):
     row_counter += 1
 
     #
-    if starting_point[0] <= intmd_left_bound[0]:
-        starting_point[1] = get_second_point(starting_point[0], intmd_starting_long, pic_width/2, 2)
+    # if starting_point[0] <= intmd_left_bound[0]:
+    #     starting_point[1] = get_second_point(starting_point[0], intmd_starting_long, pic_width/2, 2)
 
