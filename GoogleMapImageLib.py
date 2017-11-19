@@ -4,7 +4,7 @@ import requests
 import math
 
 def is_within_city(latitude, longitude, city_name, key):
-    url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + str(latitude) + "," + str(longitude) + "&key=" + key
+    url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + str(latitude) + "," + str(longitude) + "&location_type=ROOFTOP|RANGE_INTERPOLATED|GEOMETRIC_CENTER&key=" + key
     response = requests.get(url)
     response.raise_for_status()
     if (response.json()['status'] == 'ZERO_RESULTS'):
@@ -24,7 +24,7 @@ def download_satelite_image(latitude, longitude, key, fileName, width=640, heigh
 def download_map_image(latitude, longitude, key, fileName, width=640, height=640, zoom=17):
     f = open(fileName, "wb")
 
-    f.write(urllib.request.urlopen('https://maps.googleapis.com/maps/api/staticmap?center=' + str(latitude) + ',' + str(longitude) + '&zoom=17&&size=640x640&style=element:labels|visibility:off&key=' + key).read())
+    f.write(urllib.request.urlopen('https://maps.googleapis.com/maps/api/staticmap?center=' + str(latitude) + ',' + str(longitude) + '&zoom=17&size=640x640&style=feature:landscape|element:geometry|saturation:-100&style=feature:water|saturation:-100|invert_lightness:true&style=element:labels|visibility:off&key=' + key).read())
     f.close()
 
 
