@@ -64,16 +64,7 @@ def get_starting_point(row_num):
 
 # picture width in meters changes everytime the latitude changes
 starting_point = get_starting_point(starting_row)
-print(starting_point)
-
-# test_point = (upper_left_boundary_lat, upper_left_boundary_long)
-# pic_width = get_pic_width_meters(starting_point[0], 640, 17)
-#
-#
-# while(test_point[1] < intmd_left_bound[1]):
-#     test_point = get_second_point(test_point[0], test_point[1], pic_width/2, 2)
-# # print(test_point)
-# intmd_starting_long = test_point[1]
+# print(starting_point)
 
 while(starting_point[0] >= lower_right_boundary_lat):
     # width changes everytime the latitude changes
@@ -85,7 +76,6 @@ while(starting_point[0] >= lower_right_boundary_lat):
     starting_point = get_second_point(starting_point[0], starting_point[1], pic_width/2, 3)
     row_counter += 1
 
-    #
-    # if starting_point[0] <= intmd_left_bound[0]:
-    #     starting_point[1] = get_second_point(starting_point[0], intmd_starting_long, pic_width/2, 2)
 
+
+print('done')
