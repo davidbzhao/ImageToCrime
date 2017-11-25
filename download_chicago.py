@@ -24,83 +24,29 @@ def get_bot_right_corner(center_lat, center_long, half_pic_width):
     return bot_right_corner
 
 
-def init_bounds(key, width_pic, lat, lng):
+def download_right(lat, long, bound, width_pic, key):
     half_pic_width = width_pic / 2
+    col_counter = 0
 
-    col = 0
-    while True:
-        if is_within_city(lat, lng, "Chicago", key):
-            left_long, left_col = lng, 0
-            right_long, right_col = left_long, left_col
-            break
-        _, lng = get_second_point(lat, lng, half_pic_width, 2)
-        col += 1
-    while True:
-        _, lng = get_second_point(lat, lng, half_pic_width, 2)
-        col += 1
-        if is_within_city(lat, lng, "Chicago", key):
-            right_long, right_col = lng, col
-        else:
-            break
+    while long < bound:
+        if is_within_city(lat, long, "Chicago", key): # within the city ranges
 
-    return left_long, right_long, left_col, right_col
+            filename = str(row_counter) + "_" + str(col_counter) + ".png"
+            download_map_image(lat, long, key, filename)
+
+            TL_corner = get_top_left_corner(lat, long, half_pic_width)
+            BR_corner = get_bot_right_corner(lat, long, half_pic_width)
+
+            image_coord_file = open("image_coords.txt", "a")
+            image_coord_file.write(filename + ",%s,%s,%s,%s\n" % (TL_corner[0], TL_corner[1], BR_corner[0], BR_corner[1]))
+            image_coord_file.close()
+        lat,long = get_second_point(lat, long, half_pic_width, 2) # move east by half of the pic's width
+        col_counter += 1
 
 
-def find_bounds(key, width_pic, lat, left_long, right_long, left_col, right_col):
-    half_pic_width = width_pic / 2
-
-    if is_within_city(lat, left_long, "Chicago", key):
-        while True:
-            _, lng = get_second_point(lat, left_long, half_pic_width, 4)
-            if not is_within_city(lat, lng, "Chicago", key):
-                break
-            left_long = lng
-            left_col -= 1
-    else:
-        while left_col < right_col - 1:
-            _, lng = get_second_point(lat, left_long, half_pic_width, 2)
-            left_long = lng
-            left_col += 1
-            if is_within_city(lat, lng, "Chicago", key):
-                break
-
-    if is_within_city(lat, right_long, "Chicago", key):
-        while True:
-            _, lng = get_second_point(lat, right_long, half_pic_width, 2)
-            if not is_within_city(lat, lng, "Chicago", key):
-                break
-            right_long = lng
-            right_col += 1
-    else:
-        while right_col > left_col + 1:
-            _, lng = get_second_point(lat, right_long, half_pic_width, 4)
-            right_long = lng
-            right_col -= 1
-            if is_within_city(lat, lng, "Chicago", key):
-                break
-
-    return left_long, right_long, left_col, right_col
-
-def download_right(lat, lng, left_col, right_col, width_pic, key):
-    half_pic_width = width_pic / 2
-
-    for col in range(left_col, right_col + 1):
-        filename = str(row_counter) + "_" + str(col) + ".png"
-        download_map_image(lat, lng, key, filename)
-
-        TL_corner = get_top_left_corner(lat, lng, half_pic_width)
-        BR_corner = get_bot_right_corner(lat, lng, half_pic_width)
-
-        image_coord_file = open("image_coords.txt", "a")
-        image_coord_file.write(filename + ",%s,%s,%s,%s\n" % (TL_corner[0], TL_corner[1], BR_corner[0], BR_corner[1]))
-        image_coord_file.close()
-
-        lat, lng = get_second_point(lat, lng, half_pic_width, 2) # move east by half of the pic's width
-
-
-def download_entire_lat(lat, lng, left_col, right_col, pic_width, key):
-    # download_left(lat, lng, left_bound, key)
-    download_right(lat, lng, left_col, right_col, pic_width, key)
+def download_entire_lat(lat, long, right_bound, pic_width, key):
+    # download_left(lat, long, left_bound, key)
+    download_right(lat, long, right_bound, pic_width, key)
     return
 
 
@@ -118,31 +64,18 @@ def get_starting_point(row_num):
 
 # picture width in meters changes everytime the latitude changes
 starting_point = get_starting_point(starting_row)
-print(starting_point)
+# print(starting_point)
 
-# test_point = (upper_left_boundary_lat, upper_left_boundary_long)
-# pic_width = get_pic_width_meters(starting_point[0], 640, 17)
-#
-#
-# while(test_point[1] < intmd_left_bound[1]):
-#     test_point = get_second_point(test_point[0], test_point[1], pic_width/2, 2)
-# # print(test_point)
-# intmd_starting_long = test_point[1]
-
-left_long, right_long, left_col, right_col = init_bounds(key, get_pic_width_meters(starting_point[0], 640, 17), starting_point[0], starting_point[1])
 while(starting_point[0] >= lower_right_boundary_lat):
     # width changes everytime the latitude changes
     pic_width = get_pic_width_meters(starting_point[0], 640, 17)
     # download images for the current row
-
-    left_long, right_long, left_col, right_col = find_bounds(key, pic_width, starting_point[0], left_long, right_long, left_col, right_col)
-    col_start = download_entire_lat(starting_point[0], starting_point[1], left_col, right_col, pic_width, key)
+    download_entire_lat(starting_point[0], starting_point[1], lower_right_boundary_long, pic_width, key)
 
     # move down ; starting point will be the center of the leftmost square in the row below the current row
     starting_point = get_second_point(starting_point[0], starting_point[1], pic_width/2, 3)
     row_counter += 1
 
-    #
-    # if starting_point[0] <= intmd_left_bound[0]:
-    #     starting_point[1] = get_second_point(starting_point[0], intmd_starting_long, pic_width/2, 2)
 
+
+print('done')
