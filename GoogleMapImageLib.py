@@ -34,7 +34,6 @@ def get_pic_width_meters(latitude, pic_width_pixels, zoom):
     return pic_width_meters
 
 
-
 # get coordinates of 2nd point, given a starting point, distance moved, and either moving east/west
 # latitude and longitude must be given in DEGREES
 # returns coordinates of new point in DEGREES
@@ -78,37 +77,4 @@ def get_second_point_moving_NS(lat1, long1, distance, south=True):
     lat2 = math.degrees(lat2)
     long2 = math.degrees(long1) # doesn't change
     return lat2, long2
-
-# Inaccurate 2nd Coordinate Calculation 
-#theta measured counterclockwise from due east
-# go straight east 
-# theta = 0;
-# dx = distanceFromCenter*math.cos(theta) 
-# dy = distanceFromCenter*math.sin(theta) #dx, dy same units as R
-
-# delta_longitude = dx/(111320*math.cos(latitude))  # dx, dy in meters
-# delta_latitude = dy/110540                   # result in degrees long/lat
-
-# longitude += delta_longitude
-# latitude  += delta_latitude
-
-
-
-# Testing 
-# key = "AIzaSyAVcfKag3qQqMrw-I3Lwg0c-UsOj1nx4UI"
-# latitude = 41.878114
-# longitude = -87.6298
-# zoom = 17
-# width = 640
-# height = 640
-# # downloadMapImage(latitude, longitude, key, "testimg1.png")
-#
-#
-# distance_from_center = get_pic_width_meters(latitude, width, zoom)
-# latitude, longitude = getSecondPointMovingEW(latitude, longitude, distanceFromCenter, west=False)
-# print(distanceFromCenter)
-# download_satelite_image(latitude, longitude, key, "testimg1.png")
-# f = open("testimg2.png", "wb")
-# f.write(urllib.request.urlopen('https://maps.googleapis.com/maps/api/staticmap?center='+ str(latitude) +','+ str(longitude) + '&zoom=17&&size=640x640&style=element:labels|visibility:off&key=' + key).read())
-# f.close()
 
