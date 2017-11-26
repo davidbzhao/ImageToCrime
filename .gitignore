@@ -1,2 +1,9 @@
 images/
+data/
+pickles/
+tmp/
 .mypy_cache/
+.ipynb_checkpoints/
+__pycache__/
+*.db
+checkpoint
